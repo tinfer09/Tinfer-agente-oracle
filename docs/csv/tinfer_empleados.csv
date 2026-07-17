@@ -1,0 +1,11 @@
+ID_Empleado,Nombre,Apellido,Equipo,Rol,Email,Nivel_Acceso,Modalidad
+TIN-1001,Lucas,Mendez,Ingenieria,SRE,lucas.mendez@tinfer.io,Root,Remoto
+TIN-1002,Camila,Rojas,Producto,Product Manager,camila.rojas@tinfer.io,Estandar,Hibrido
+TIN-1003,Andres,Castro,Ingenieria,Backend Developer,andres.castro@tinfer.io,Desarrollador,Remoto
+TIN-1004,Sofia,Jimenez,Soporte,Customer Success,sofia.jimenez@tinfer.io,Limitado,Presencial
+TIN-1005,Mateo,Vidal,Seguridad,Security Engineer,mateo.vidal@tinfer.io,Root,Remoto
+TIN-1006,Florencia,Gomez,Ventas,Sales Executive,florencia.gomez@tinfer.io,Estandar,Hibrido
+TIN-1007,Diego,Paz,Ingenieria,Frontend Developer,diego.paz@tinfer.io,Desarrollador,Remoto
+TIN-1008,Valentina,Rios,Data,Data Scientist,valentina.rios@tinfer.io,Analista,Remoto
+TIN-1009,Nicolas,Vega,Marketing,Growth Hacker,nicolas.vega@tinfer.io,Estandar,Hibrido
+TIN-1010,Martina,Cruz,Ingenieria,Engineering Manager,martina.cruz@tinfer.io,Desarrollador,Remoto

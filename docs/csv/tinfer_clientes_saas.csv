@@ -1,0 +1,9 @@
+ID_Tenant,Nombre_Cliente,Plan_Suscripcion,Fecha_Alta,ARR_USD,Region_AWS,Estado,Manager_Cuenta
+TEN-5001,TechNova,Enterprise,2024-01-15,120000,us-east-1,Activo,Florencia Gomez
+TEN-5002,GlobalRetail,Pro,2024-03-20,45000,us-west-2,Activo,Florencia Gomez
+TEN-5003,FinanzasYa,Enterprise,2025-02-10,180000,us-east-1,Activo,Florencia Gomez
+TEN-5004,SaludDigital,Starter,2025-06-05,12000,eu-central-1,Activo,Nicolas Vega
+TEN-5005,LogisticaExpress,Pro,2025-08-12,50000,sa-east-1,Activo,Florencia Gomez
+TEN-5006,EduPlataforma,Starter,2025-11-20,10000,us-east-1,Cancelado,Nicolas Vega
+TEN-5007,AgroTech,Pro,2026-01-15,48000,sa-east-1,Activo,Florencia Gomez
+TEN-5008,CriptoHub,Enterprise,2026-03-01,250000,us-west-2,Onboarding,Florencia Gomez

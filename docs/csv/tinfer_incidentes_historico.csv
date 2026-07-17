@@ -1,0 +1,9 @@
+ID_Incidente,Fecha,Servicio_Afectado,Severidad,Duracion_Minutos,Causa_Raiz,Responsable_PostMortem,Estado
+INC-2025-01,2025-02-14,API Gateway,SEV-2,45,Certificado SSL expirado,Lucas Mendez,Resuelto
+INC-2025-02,2025-04-03,Base de Datos Primaria,SEV-1,120,Saturacion de conexiones (Connection Pool),Lucas Mendez,Resuelto
+INC-2025-03,2025-06-22,Servicio de Billing,SEV-3,15,Despliegue fallido (Rollback automatico),Andres Castro,Resuelto
+INC-2025-04,2025-09-10,Web App Frontend,SEV-2,30,Bug en actualizacion de React,Diego Paz,Resuelto
+INC-2025-05,2025-11-05,Worker de Correos,SEV-4,180,Rate limit excedido en SendGrid,Andres Castro,Resuelto
+INC-2026-01,2026-01-20,IAM (Autenticacion),SEV-1,60,Latencia alta en base de datos Redis,Lucas Mendez,Resuelto
+INC-2026-02,2026-03-12,Webhook Processor,SEV-3,40,Mensajes encolados por timeout de proveedor,Andres Castro,Resuelto
+INC-2026-03,2026-05-02,Dashboard de Analiticas,SEV-4,240,Falla en pipeline de Snowflake,Valentina Rios,Investigando
