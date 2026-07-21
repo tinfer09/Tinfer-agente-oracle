@@ -1,15 +1,24 @@
-from langchain.tools import tool
+from langchain_core.tools import tool
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 import pandas as pd
 from .vector_store import get_vector_store
 
+# Defino mi primera herramienta usando el decorador @tool. 
+# Esto le dice al agente que esta función puede ser invocada por la IA.
 @tool
 def buscar_en_documentos_tinfer(query: str) -> str:
     """Busca y devuelve información de los manuales, políticas y arquitecturas de Tinfer."""
+    # Obtengo la conexión a mi base de datos vectorial ChromaDB.
     vectorstore = get_vector_store()
+    
+    # Configuro el "retriever" para que me devuelva los 4 fragmentos (chunks) más relevantes de mis PDFs.
     retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+    
+    # Hago la búsqueda usando la consulta (query) del usuario.
     docs = retriever.invoke(query)
+    
+    # Concateno el texto de los fragmentos encontrados y los devuelvo como respuesta para que el LLM lo lea.
     return "\n\n".join([d.page_content for d in docs])
 
 def create_rag_tool():
@@ -19,34 +28,50 @@ def create_rag_tool():
 def create_csv_tools(dataframes_dict: dict[str, pd.DataFrame]):
     """
     Crea herramientas basadas en Pandas DataFrame Agent para cada CSV.
-    Retorna una lista de tools o configuraciones para el agente.
+    Retorna una lista de tools listas para que el agente principal las use.
     """
-    # En LangChain, un agente Pandas no es una "Tool" simple por defecto,
-    # sino que es un agente en sí mismo. Para integrarlo como tool,
-    # podemos usar una Tool personalizada que llame al agente Pandas.
-    from langchain.tools import Tool
+    from langchain_core.tools import Tool
     
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0)
+    # Vuelvo a instanciar el modelo de Groq para el agente de Pandas, 
+    # usando una temperatura de 0 para que sea estrictamente analítico con los datos.
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
     tools = []
     
+    # Itero sobre cada CSV que cargué en memoria.
     for name, df in dataframes_dict.items():
-        # Creamos un agente para este dataframe
+        # Creo un agente especializado en entender este DataFrame específico.
         agent = create_pandas_dataframe_agent(
             llm, 
             df, 
             verbose=True, 
-            agent_type="openai-tools", # OpenAI-tools format is well supported by many LLMs
-            allow_dangerous_code=True # Requerido en versiones nuevas para ejecutar código Python (pandas)
+            agent_type="tool-calling", # Cambié a 'tool-calling' que es más compatible con Gemini 1.5.
+            allow_dangerous_code=True # Esto es necesario para que el agente pueda ejecutar código Python de Pandas internamente de forma segura aquí.
         )
         
+        # Le doy una descripción clara para que el agente principal sepa CUÁNDO debe usar esta herramienta.
         description = f"Útil para responder preguntas sobre los datos del archivo {name}.csv. Entrada: la pregunta del usuario."
         
-        # Creamos una tool que invoca al agente de Pandas
-        tool = Tool(
+        # Definimos una función envoltorio (wrapper) para evitar errores de firmas de tipos 
+        # (TypeError: 'function' object is not subscriptable) que ocurren cuando LangGraph
+        # intenta inspeccionar la función interna de agent.invoke en versiones nuevas de Python.
+        def wrapper_func(query: str, agent_instance=agent) -> str:
+            # El agente de Pandas recibe un diccionario con la clave "input"
+            response = agent_instance.invoke({"input": query})
+            # Devolvemos solo el texto de la respuesta final
+            return str(response.get("output", response))
+            
+        from pydantic import BaseModel, Field
+        
+        class CSVToolInput(BaseModel):
+            query: str = Field(description="La pregunta o consulta sobre los datos del archivo")
+
+        # Envuelvo el agente de Pandas en una herramienta estándar de LangChain con su schema explícito.
+        csv_tool = Tool(
             name=f"consultar_datos_{name}",
-            func=agent.invoke,
-            description=description
+            func=wrapper_func,
+            description=description,
+            args_schema=CSVToolInput
         )
-        tools.append(tool)
+        tools.append(csv_tool)
         
     return tools
