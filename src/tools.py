@@ -4,11 +4,16 @@ from langchain_groq import ChatGroq
 import pandas as pd
 from .vector_store import get_vector_store
 
+from pydantic import BaseModel, Field
+
+class RAGToolInput(BaseModel):
+    query: str = Field(description="La consulta o pregunta específica para buscar en los documentos. Ej: 'políticas de la empresa'")
+
 # Defino mi primera herramienta usando el decorador @tool. 
 # Esto le dice al agente que esta función puede ser invocada por la IA.
-@tool
+@tool("buscar_en_documentos_tinfer", args_schema=RAGToolInput)
 def buscar_en_documentos_tinfer(query: str) -> str:
-    """Busca y devuelve información de los manuales, políticas y arquitecturas de Tinfer."""
+    """Útil y OBLIGATORIO para buscar información en los manuales, políticas, reglas y arquitectura de Tinfer. DEBES usar esto cuando te pregunten sobre la empresa, políticas, o documentos."""
     # Obtengo la conexión a mi base de datos vectorial ChromaDB.
     vectorstore = get_vector_store()
     

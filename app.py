@@ -118,8 +118,11 @@ if user_input:
     # 2. Muestro un indicador de carga (\"spinner\") mientras espero a que Gemini responda.
     with st.spinner("TinferBot está buscando información y pensando..."):
         try:
-            # Invoco a mi agente de LangGraph pasándole la consulta del usuario.
-            response = agent_executor.invoke({"messages": [("user", user_input)]})
+            # Preparo el historial completo de la conversación para que el agente tenga memoria
+            chat_history = [(msg["role"], msg["content"]) for msg in st.session_state.messages]
+            
+            # Invoco a mi agente de LangGraph pasándole todo el historial.
+            response = agent_executor.invoke({"messages": chat_history})
             
             # La respuesta real del bot estará en el último mensaje de la lista de respuestas de LangGraph.
             bot_response = response["messages"][-1].content
