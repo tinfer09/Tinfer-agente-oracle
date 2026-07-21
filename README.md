@@ -1,60 +1,87 @@
-# 🤖 TinferBot - Agente de Inteligencia Artificial
+# 🤖 TinferBot - AI Corporate Assistant
 
-TinferBot es un agente de IA conversacional diseñado para uso interno en **Tinfer** (empresa SaaS). Permite a los empleados consultar manuales, políticas corporativas y bases de datos (clientes, incidentes, empleados) usando lenguaje natural.
+[![Deploy Status](https://img.shields.io/badge/Render-Deployed-success?logo=render)](#) 
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](#)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Enabled-orange)](#)
+[![Groq](https://img.shields.io/badge/LLM-Llama_3-purple)](#)
+
+TinferBot es un agente de Inteligencia Artificial conversacional diseñado para uso interno en **Tinfer** (empresa SaaS). 
+Su objetivo es centralizar el conocimiento corporativo, permitiendo a los empleados consultar manuales, políticas de la empresa y bases de datos tabulares (clientes, incidentes, empleados) utilizando lenguaje natural.
+
+🚀 **Prueba la versión en vivo:** [TinferBot en Render](https://tinfer-agente-oracle.onrender.com/)
+
+---
 
 ## 🏗️ Arquitectura de la Solución
 
-El sistema utiliza un enfoque **RAG (Retrieval-Augmented Generation)** y herramientas de análisis de datos estructurados (Pandas):
+El sistema utiliza un enfoque moderno de **Agentes Autónomos** y **RAG (Retrieval-Augmented Generation)**:
 
-1. **Agente Orquestador**: Usa LangChain (Tool Calling Agent) para decidir qué herramienta usar según la pregunta del usuario.
-2. **LLM**: Google Gemini 2.0 Flash (`gemini-2.0-flash`).
-3. **RAG para Documentos (PDFs)**:
-   - Los PDFs se dividen usando `RecursiveCharacterTextSplitter`.
-   - Se vectorizan con `GoogleGenerativeAIEmbeddings`.
-   - Se almacenan localmente en **ChromaDB**.
-4. **Análisis de Datos (CSVs)**:
-   - Se utiliza `create_pandas_dataframe_agent` de LangChain Experimental para convertir preguntas en código pandas internamente y responder consultas sobre los CSVs.
-5. **Interfaz de Usuario**: Construida con **Streamlit**, ofreciendo una experiencia moderna y fluida.
+1. **Agente Orquestador (LangGraph)**: Utiliza un flujo ReAct (Reasoning and Acting) con memoria conversacional para decidir dinámicamente qué herramienta invocar según el contexto de la pregunta y mantener el hilo de la charla.
+2. **LLM Principal**: Modelo `llama-3.3-70b-versatile` procesado a ultra alta velocidad a través de **Groq**.
+3. **Módulo RAG (Búsqueda Documental en PDFs)**:
+   - División de texto inteligente mediante `RecursiveCharacterTextSplitter`.
+   - Embeddings locales de alta eficiencia utilizando `FastEmbed (BAAI/bge-small-en-v1.5)`.
+   - Almacenamiento y recuperación vectorial rápida mediante **ChromaDB**.
+4. **Análisis de Datos Estructurados (CSVs)**:
+   - Herramientas dinámicas generadas con `create_pandas_dataframe_agent` capaces de escribir y ejecutar código Python internamente para analizar DataFrames en tiempo real.
+5. **Frontend**: Interfaz de usuario limpia, responsiva y con estilos corporativos construida con **Streamlit**.
 
-## 🛠️ Tecnologías y Herramientas
+## ☁️ Despliegue en la Nube (Render)
 
-- **Python 3.10+**
-- **LangChain** (Framework principal)
-- **Google Generative AI** (Gemini LLM y Embeddings)
-- **ChromaDB** (Vector Store)
-- **PyPDF** (Lectura de PDFs)
-- **Pandas** (Análisis de CSVs)
-- **Streamlit** (UI/UX Frontend)
+El proyecto está configurado bajo la metodología de **Infraestructura como Código (IaC)**.
+Para desplegar automáticamente en [Render](https://render.com/), el repositorio incluye el blueprint `render.yaml`. 
+El servicio web descargará las dependencias, inicializará el servidor en el puerto correcto y generará la base de datos vectorial de embeddings "al vuelo" a partir de los PDFs puros.
 
-## 🚀 Cómo ejecutar el proyecto localmente
+*(Nota: Solo debes asegurarte de configurar la variable de entorno `GROQ_API_KEY` en tu dashboard de Render).*
 
-1. Clona este repositorio o asegúrate de estar en el directorio `Tinfer-agente-oracle`.
-2. Instala las dependencias:
+## 💻 Ejecución Local
+
+Sigue estos 5 pasos exactos para levantar el agente en tu propia máquina desde cero:
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/tinfer09/Tinfer-agente-oracle.git
+   cd Tinfer-agente-oracle
+   ```
+
+2. **Crear y activar el entorno virtual aisaldo**:
+   ```bash
+   python -m venv .venv
+   
+   # En Windows:
+   .venv\Scripts\activate
+   # En Mac/Linux:
+   source .venv/bin/activate
+   ```
+
+3. **Instalar las dependencias exactas**:
    ```bash
    pip install -r requirements.txt
    ```
-3. Configura tu API Key de Gemini creando un archivo `.env` en la raíz (puedes basarte en este ejemplo):
+
+4. **Configurar las credenciales**:
+   Crea un archivo `.env` en la raíz del proyecto y añade tu API Key de Groq:
+   ```env
+   GROQ_API_KEY=tu_api_key_aqui
    ```
-   GOOGLE_API_KEY=tu_api_key_aqui
-   ```
-4. Ejecuta la aplicación de Streamlit:
+
+5. **Iniciar la aplicación**:
    ```bash
    streamlit run app.py
    ```
-5. La primera vez que se ejecute, el sistema procesará los PDFs y creará la base vectorial `docs/chroma_db/`. Esto puede tomar un minuto.
+   > ⏳ *La primera vez que arranques el proyecto localmente, la consola procesará los PDFs y construirá la base de datos de ChromaDB (pesa unos 100MB). Esto puede tomar un minuto.*
 
 ## 💡 Ejemplos de Interacción
 
-### ❓ Preguntas al Agente
-- **Sobre manuales (PDFs):** *"¿Qué debo hacer si ocurre un incidente de severidad 1?"*
-- **Sobre manuales (PDFs):** *"¿Cómo es la arquitectura de microservicios de Tinfer?"*
-- **Sobre datos (CSVs):** *"¿Cuántos clientes SaaS tenemos y cuál es el de mayor ARR?"*
-- **Sobre datos (CSVs):** *"¿Quiénes son los ingenieros de software de la empresa y en qué modalidad trabajan?"*
+El agente es capaz de enrutar tu pregunta a la herramienta correcta según lo que necesites saber. ¡Prueba preguntarle estas cosas!
 
-### 💬 Ejemplo de Respuesta Generada
-> **Tú:** ¿Cuál fue el incidente más largo registrado y cuál fue su causa?
-> 
-> **TinferBot:** El incidente más largo fue el INC-2026-03 en el Dashboard de Analíticas, que duró 240 minutos. La causa raíz fue una falla en el pipeline de Snowflake. La responsable del post-mortem es Valentina Rios y actualmente está en estado "Investigando".
+### 📚 Consultas Documentales (RAG)
+- *"¿Cómo es la arquitectura de microservicios de Tinfer?"*
+- *"¿Cuál es el protocolo a seguir si ocurre un incidente de severidad 1?"*
+
+### 📊 Consultas de Datos (Pandas Agent)
+- *"¿Cuántos clientes SaaS activos tenemos y cuál es el que genera mayor ARR?"*
+- *"Haz un resumen de los incidentes históricos del último mes."*
 
 ---
-*Proyecto desarrollado para el Challenge Alura Agente - Oracle Next Education*
+*Desarrollado como Proyecto Final para el Challenge Alura Agente - Oracle Next Education*

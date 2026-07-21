@@ -3,4 +3,3 @@ venv/
 __pycache__/
 *.pyc
 .chroma/
-docs/chroma_db/
