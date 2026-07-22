@@ -83,5 +83,8 @@ El agente es capaz de enrutar tu pregunta a la herramienta correcta según lo qu
 - *"¿Cuántos clientes SaaS activos tenemos y cuál es el que genera mayor ARR?"*
 - *"Haz un resumen de los incidentes históricos del último mes."*
 
+Demostración
+
+![Image Alt](https://github.com/tinfer09/Tinfer-agente-oracle/blob/2b4dddca0ee03c278efa6406acc78ea1b7d99f15/Captura.PNG)
 ---
 *Desarrollado como Proyecto Final para el Challenge Alura Agente - Oracle Next Education*
